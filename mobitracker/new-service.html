@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>New Service Entry – MobiTracker</title>
+  <meta name="description" content="Create a new mobile repair service record with customer, device, problem, and payment details."/>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    .form-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 20px;
+      transition: var(--transition);
+    }
+    .form-card:hover { border-color: rgba(108,99,255,0.15); }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .section-num-badge {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--gradient-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: white;
+      flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(108,99,255,0.4);
+    }
+    .section-title-text { font-size: 15px; font-weight: 700; }
+    .section-desc { font-size: 12px; color: var(--text-muted); }
+
+    /* Condition Toggle */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      gap: 16px;
+    }
+    .toggle-label { font-size: 13px; font-weight: 600; }
+    .toggle-options { display: flex; gap: 8px; }
+    .toggle-btn {
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 12px; font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .toggle-btn.active-broken { background: rgba(239,68,68,0.2); border-color: #ef4444; color: #ef4444; }
+    .toggle-btn.active-ok { background: rgba(16,185,129,0.15); border-color: #10b981; color: #10b981; }
+    .toggle-btn.active-on { background: rgba(16,185,129,0.15); border-color: #10b981; color: #10b981; }
+    .toggle-btn.active-off { background: rgba(245,158,11,0.15); border-color: #f59e0b; color: #f59e0b; }
+
+    /* Device Preview Sticky */
+    .device-preview-wrap {
+      position: sticky;
+      top: calc(var(--topbar-height) + 20px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Inline service ID */
+    .sid-box {
+      background: linear-gradient(135deg, rgba(108,99,255,0.12), rgba(168,85,247,0.08));
+      border: 1px solid rgba(108,99,255,0.35);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sid-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+    .sid-value { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 800; color: var(--accent-primary); letter-spacing: 1px; }
+
+    /* Total display */
+    .total-display {
+      background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.08));
+      border: 1px solid rgba(16,185,129,0.25);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .total-label { font-size: 14px; font-weight: 700; }
+    .total-value { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800; color: var(--accent-success); }
+
+    /* SMS button */
+    .sms-btn-wrap { display: flex; gap: 12px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">📱</div>
+      <div>
+        <div class="logo-text">MobiTracker</div>
+        <div class="logo-sub">Service Management</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a href="index.html" class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span></a>
+      <a href="new-service.html" class="nav-item active"><span class="nav-icon">➕</span><span class="nav-label">New Service</span></a>
+      <a href="records.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Service Records</span></a>
+      <div class="nav-section-label">Reports</div>
+      <a href="records.html?filter=pending" class="nav-item"><span class="nav-icon">⏳</span><span class="nav-label">Pending</span></a>
+      <a href="records.html?filter=in_progress" class="nav-item"><span class="nav-icon">🔧</span><span class="nav-label">In Progress</span></a>
+      <a href="records.html?filter=completed" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Completed</span></a>
+      <a href="records.html?payment=unpaid" class="nav-item"><span class="nav-icon">💳</span><span class="nav-label">Unpaid Bills</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar">A</div>
+        <div><div class="user-name">Admin</div><div class="user-role">Shop Manager</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">New Service Entry</div>
+      <div class="topbar-actions">
+        <a href="records.html" class="btn btn-secondary">📋 View Records</a>
+        <button class="btn btn-primary" id="save-btn" onclick="saveForm()">💾 Save Service</button>
+      </div>
+    </header>
+
+    <div class="page-content fade-in">
+      <div class="new-service-layout">
+
+        <!-- FORM SECTION -->
+        <div class="new-service-form">
+
+          <!-- Service ID -->
+          <div class="sid-box mb-20">
+            <div>
+              <div class="sid-label">Service ID (Auto Generated)</div>
+              <div class="sid-value" id="display-service-id">Generating...</div>
+            </div>
+            <span style="font-size:28px">🎫</span>
+          </div>
+
+          <!-- ① Customer Details -->
+          <div class="form-card">
+            <div class="section-header">
+              <div class="section-num-badge">1</div>
+              <div>
+                <div class="section-title-text">Customer Details</div>
+                <div class="section-desc">Enter the customer's contact information</div>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Customer Name <span class="required">*</span></label>
+                <input type="text" class="form-control" id="customerName" placeholder="e.g. Rajesh Kumar" oninput="updatePreview()"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone Number <span class="required">*</span></label>
+                <input type="tel" class="form-control" id="customerPhone" placeholder="e.g. 9876543210" maxlength="10"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- ② Mobile Details -->
+          <div class="form-card">
+            <div class="section-header">
+              <div class="section-num-badge">2</div>
+              <div>
+                <div class="section-title-text">Mobile Details</div>
+                <div class="section-desc">Enter the device information — image will auto-display</div>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Mobile Name <span class="required">*</span></label>
+                <input type="text" class="form-control" id="mobileName" placeholder="e.g. Samsung Galaxy S24, iPhone 14 Pro"
+                  list="brand-list" oninput="updateDeviceImage(); updatePreview()"/>
+                <datalist id="brand-list">
+                  <option value="Samsung"/><option value="iPhone"/><option value="Xiaomi"/>
+                  <option value="Redmi"/><option value="Oppo"/><option value="Vivo"/>
+                  <option value="OnePlus"/><option value="Realme"/><option value="Nokia"/>
+                  <option value="Motorola"/><option value="Huawei"/><option value="Sony"/>
+                  <option value="ASUS"/><option value="Tecno"/><option value="Infinix"/>
+                </datalist>
+              </div>
+              <div class="form-group">
+                <label class="form-label">IMEI / Serial Number</label>
+                <input type="text" class="form-control" id="imei" placeholder="15-digit IMEI" maxlength="20"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Color</label>
+                <input type="text" class="form-control" id="color" placeholder="e.g. Midnight Black"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- ③ Problem Details -->
+          <div class="form-card">
+            <div class="section-header">
+              <div class="section-num-badge">3</div>
+              <div>
+                <div class="section-title-text">Problem Details</div>
+                <div class="section-desc">Select the issues and describe the problem</div>
+              </div>
+            </div>
+
+            <div class="form-group mb-16">
+              <label class="form-label">Problem Description / Issues <span class="required">*</span></label>
+              <div class="checkbox-group" id="problems-group">
+                <label class="checkbox-chip" onclick="toggleChip(this)">
+                  <input type="checkbox" value="display_not_working"/>
+                  <span class="chip-icon">📵</span> Display Not Working
+                </label>
+                <label class="checkbox-chip" onclick="toggleChip(this)">
+                  <input type="checkbox" value="touch_issue"/>
+                  <span class="chip-icon">👆</span> Touch Issue
+                </label>
+                <label class="checkbox-chip" onclick="toggleChip(this)">
+                  <input type="checkbox" value="battery_issue"/>
+                  <span class="chip-icon">🔋</span> Battery Issue
+                </label>
+                <label class="checkbox-chip" onclick="toggleChip(this)">
+                  <input type="checkbox" value="charging_problem"/>
+                  <span class="chip-icon">⚡</span> Charging Problem
+                </label>
+                <label class="checkbox-chip" onclick="toggleChip(this)">
+                  <input type="checkbox" value="sound_problem"/>
+                  <span class="chip-icon">🔇</span> Sound Problem
+                </label>
+                <label class="checkbox-chip" onclick="toggleChip(this)">
+                  <input type="checkbox" value="camera_issue"/>
+                  <span class="chip-icon">📷</span> Camera Issue
+                </label>
+                <label class="checkbox-chip" onclick="toggleChip(this)">
+                  <input type="checkbox" value="wifi_issue"/>
+                  <span class="chip-icon">📶</span> WiFi / Network Issue
+                </label>
+                <label class="checkbox-chip" onclick="toggleChip(this)">
+                  <input type="checkbox" value="overheating"/>
+                  <span class="chip-icon">🌡️</span> Overheating
+                </label>
+                <label class="checkbox-chip" onclick="toggleChip(this)">
+                  <input type="checkbox" value="mic_issue"/>
+                  <span class="chip-icon">🎤</span> Mic Not Working
+                </label>
+                <label class="checkbox-chip" onclick="toggleChip(this)">
+                  <input type="checkbox" value="power_issue"/>
+                  <span class="chip-icon">🔌</span> Not Switching On
+                </label>
+                <label class="checkbox-chip" onclick="toggleChip(this)">
+                  <input type="checkbox" value="software_crash"/>
+                  <span class="chip-icon">💻</span> Software Crash
+                </label>
+                <label class="checkbox-chip" onclick="toggleChip(this)">
+                  <input type="checkbox" value="water_damage"/>
+                  <span class="chip-icon">💧</span> Water Damage
+                </label>
+              </div>
+            </div>
+
+            <div class="form-grid-2 mb-16">
+              <div class="form-group">
+                <label class="form-label">Problem Type <span class="required">*</span></label>
+                <div class="radio-group" id="problem-type-group">
+                  <label class="radio-chip" onclick="selectRadio(this, 'problem-type-group')">
+                    <input type="radio" name="problemType" value="display_issue"/>
+                    <span class="chip-dot"></span> Display Issue
+                  </label>
+                  <label class="radio-chip" onclick="selectRadio(this, 'problem-type-group')">
+                    <input type="radio" name="problemType" value="software_issue"/>
+                    <span class="chip-dot"></span> Software Issue
+                  </label>
+                  <label class="radio-chip" onclick="selectRadio(this, 'problem-type-group')">
+                    <input type="radio" name="problemType" value="hardware_issue"/>
+                    <span class="chip-dot"></span> Hardware Issue
+                  </label>
+                  <label class="radio-chip" onclick="selectRadio(this, 'problem-type-group')">
+                    <input type="radio" name="problemType" value="water_damage"/>
+                    <span class="chip-dot"></span> Water Damage
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group mb-16">
+              <label class="form-label">Detailed Problem Description</label>
+              <textarea class="form-control" id="problemDescription" placeholder="Describe the exact issue in detail, e.g. 'Screen is completely black after dropping from height. Touch still responds but display shows nothing.'" rows="3"></textarea>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Screen Condition</div>
+                  <div style="font-size:11px;color:var(--text-muted)">Is the screen physically broken?</div>
+                </div>
+                <div class="toggle-options">
+                  <button type="button" class="toggle-btn active-broken" id="screen-broken" onclick="setCondition('screen', 'broken')">💔 Broken</button>
+                  <button type="button" class="toggle-btn" id="screen-not_broken" onclick="setCondition('screen', 'not_broken')">✅ Not Broken</button>
+                </div>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Power Condition</div>
+                  <div style="font-size:11px;color:var(--text-muted)">Can the device be switched on?</div>
+                </div>
+                <div class="toggle-options">
+                  <button type="button" class="toggle-btn" id="power-on" onclick="setCondition('power', 'on')">⚡ Power On</button>
+                  <button type="button" class="toggle-btn active-off" id="power-off" onclick="setCondition('power', 'off')">❌ Power Off</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ④ Service Details -->
+          <div class="form-card">
+            <div class="section-header">
+              <div class="section-num-badge">4</div>
+              <div>
+                <div class="section-title-text">Service Details</div>
+                <div class="section-desc">Dates and service tracking</div>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Received Date <span class="required">*</span></label>
+                <input type="date" class="form-control" id="receivedDate"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Expected Delivery Date</label>
+                <input type="date" class="form-control" id="expectedDate"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Delivery Date</label>
+                <input type="date" class="form-control" id="deliveryDate"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Technician</label>
+                <input type="text" class="form-control" id="technician" placeholder="e.g. Suresh"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- ⑤ Repair Details -->
+          <div class="form-card">
+            <div class="section-header">
+              <div class="section-num-badge">5</div>
+              <div>
+                <div class="section-title-text">Repair Details</div>
+                <div class="section-desc">Work done and spare parts used</div>
+              </div>
+            </div>
+
+            <div class="form-group mb-16">
+              <label class="form-label">Work Done / Repair Notes</label>
+              <textarea class="form-control" id="workDone" placeholder="e.g. Replaced display assembly. Cleaned charging port. Installed new battery." rows="3"></textarea>
+            </div>
+
+            <div class="form-group mb-16">
+              <label class="form-label">Spare Parts Used</label>
+              <div class="spare-parts-grid" id="spare-parts-group">
+                <label class="spare-tag" onclick="toggleSpareTag(this)">
+                  <input type="checkbox" value="screen"/> 📱 Screen / Display
+                </label>
+                <label class="spare-tag" onclick="toggleSpareTag(this)">
+                  <input type="checkbox" value="battery"/> 🔋 Battery
+                </label>
+                <label class="spare-tag" onclick="toggleSpareTag(this)">
+                  <input type="checkbox" value="charging_port"/> ⚡ Charging Port
+                </label>
+                <label class="spare-tag" onclick="toggleSpareTag(this)">
+                  <input type="checkbox" value="speaker"/> 🔊 Speaker
+                </label>
+                <label class="spare-tag" onclick="toggleSpareTag(this)">
+                  <input type="checkbox" value="mic"/> 🎤 Microphone
+                </label>
+                <label class="spare-tag" onclick="toggleSpareTag(this)">
+                  <input type="checkbox" value="camera"/> 📷 Camera Module
+                </label>
+                <label class="spare-tag" onclick="toggleSpareTag(this)">
+                  <input type="checkbox" value="back_cover"/> 🛡️ Back Cover
+                </label>
+                <label class="spare-tag" onclick="toggleSpareTag(this)">
+                  <input type="checkbox" value="power_button"/> 🔘 Power Button
+                </label>
+                <label class="spare-tag" onclick="toggleSpareTag(this)">
+                  <input type="checkbox" value="volume_button"/> 🔉 Volume Button
+                </label>
+                <label class="spare-tag" onclick="toggleSpareTag(this)">
+                  <input type="checkbox" value="motherboard"/> 🖥️ Motherboard
+                </label>
+                <label class="spare-tag" onclick="toggleSpareTag(this)">
+                  <input type="checkbox" value="sim_tray"/> 📤 SIM Tray
+                </label>
+                <label class="spare-tag" onclick="toggleSpareTag(this)">
+                  <input type="checkbox" value="front_camera"/> 🤳 Front Camera
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Service Status <span class="required">*</span></label>
+              <div class="radio-group" id="status-group">
+                <label class="radio-chip selected" onclick="selectRadio(this, 'status-group')">
+                  <input type="radio" name="serviceStatus" value="pending" checked/>
+                  <span class="chip-dot"></span> ⏳ Pending
+                </label>
+                <label class="radio-chip" onclick="selectRadio(this, 'status-group')">
+                  <input type="radio" name="serviceStatus" value="in_progress"/>
+                  <span class="chip-dot"></span> 🔧 In Progress
+                </label>
+                <label class="radio-chip" onclick="selectRadio(this, 'status-group')">
+                  <input type="radio" name="serviceStatus" value="completed"/>
+                  <span class="chip-dot"></span> ✅ Completed
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- ⑥ Payment Details -->
+          <div class="form-card">
+            <div class="section-header">
+              <div class="section-num-badge">6</div>
+              <div>
+                <div class="section-title-text">Payment Details</div>
+                <div class="section-desc">Service charges and payment status</div>
+              </div>
+            </div>
+            <div class="form-grid mb-16">
+              <div class="form-group">
+                <label class="form-label">Service Charge (₹)</label>
+                <input type="number" class="form-control" id="serviceCharge" placeholder="0" min="0" oninput="calcTotal()"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Spare Parts Cost (₹)</label>
+                <input type="number" class="form-control" id="sparePartsCost" placeholder="0" min="0" oninput="calcTotal()"/>
+              </div>
+            </div>
+
+            <div class="total-display mb-16">
+              <div class="total-label">💰 Total Amount</div>
+              <div class="total-value" id="totalAmount">₹0</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Payment Status</label>
+              <div class="radio-group" id="payment-group">
+                <label class="radio-chip" onclick="selectRadio(this, 'payment-group')">
+                  <input type="radio" name="paymentStatus" value="unpaid" checked/>
+                  <span class="chip-dot"></span> ❌ Unpaid
+                </label>
+                <label class="radio-chip selected-green" onclick="selectRadio(this, 'payment-group')">
+                  <input type="radio" name="paymentStatus" value="paid"/>
+                  <span class="chip-dot"></span> ✅ Paid
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Save Actions -->
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:40px">
+            <button class="btn btn-primary btn-lg" onclick="saveForm()" id="save-bottom-btn">
+              💾 Save Service Record
+            </button>
+            <button class="btn btn-success" onclick="saveAndSendSMS()" id="save-sms-btn">
+              📱 Save & WhatsApp
+            </button>
+            <button class="btn btn-secondary" onclick="resetForm()">
+              🔄 Reset Form
+            </button>
+          </div>
+
+        </div>
+
+        <!-- RIGHT SIDEBAR (Device Preview) -->
+        <div class="new-service-sidebar">
+          <div class="device-preview-wrap">
+
+            <!-- Device Image Preview -->
+            <div class="card" style="text-align:center;padding:20px">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:14px">
+                📱 Device Preview
+              </div>
+              <div id="device-img-container" class="device-image-container" style="margin:0 auto 14px">
+                <div class="device-placeholder">
+                  <div class="ph-icon">📱</div>
+                  <p>Enter mobile name to see device</p>
+                </div>
+              </div>
+              <div class="device-name-display" id="device-name-preview">—</div>
+              <div class="device-brand-badge" id="device-brand-badge" style="margin:8px auto;display:inline-block">Brand</div>
+            </div>
+
+            <!-- Customer Preview Card -->
+            <div class="card" id="customer-preview-card" style="display:none">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:12px">
+                👤 Customer
+              </div>
+              <div style="font-size:15px;font-weight:700" id="cust-name-preview">—</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:4px" id="cust-phone-preview">—</div>
+            </div>
+
+            <!-- Quick Tips -->
+            <div class="card" style="background:rgba(108,99,255,0.06);border-color:rgba(108,99,255,0.15)">
+              <div style="font-size:12px;font-weight:700;color:var(--accent-primary);margin-bottom:10px">💡 Quick Tips</div>
+              <ul style="font-size:11px;color:var(--text-secondary);line-height:1.8;padding-left:16px">
+                <li>Service ID is auto-generated</li>
+                <li>Select all problems from chips</li>
+                <li>Total is auto-calculated</li>
+                <li>WhatsApp opened on save</li>
+                <li>Device image auto-loads</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+<script src="js/app.js"></script>
+<script src="js/new-service.js"></script>
+</body>
+</html>
